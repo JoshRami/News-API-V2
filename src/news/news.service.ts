@@ -5,9 +5,10 @@ import { News, NewsSources } from './news.interface';
 export class NewsService {
   constructor(private httpService: HttpService) {}
 
-  async getNYTimesNews(): Promise<News[]> {
+  async getNYTimesNews(query: string): Promise<News[]> {
     const apiKey = process.env.THE_NYTIMES_KEY;
-    const url = `https://api.nytimes.com/svc/search/v2/articlesearch.json?q=election&type_of_material=News&api-key=${apiKey}`;
+    const materialTipe = 'News';
+    const url = `https://api.nytimes.com/svc/search/v2/articlesearch.json?q=${query}&type_of_material=${materialTipe}&api-key=${apiKey}`;
     const {
       data: {
         response: { docs },
@@ -32,9 +33,9 @@ export class NewsService {
     });
   }
 
-  async getTheGuardianNews(): Promise<News[]> {
+  async getTheGuardianNews(query: string): Promise<News[]> {
     const apiKey = process.env.THE_GUARDIAN_KEY;
-    const url = `https://content.guardianapis.com/search?q=debate&tag=politics/politics&from-date=2014-01-01&api-key=${apiKey}`;
+    const url = `https://content.guardianapis.com/search?q=${query}&api-key=${apiKey}`;
     const {
       data: {
         response: { results },
@@ -53,9 +54,10 @@ export class NewsService {
       };
     });
   }
-  async getNews() {
-    const nytNews = await this.getNYTimesNews();
-    const theGuardianNews = await this.getTheGuardianNews();
-    return { data: [...nytNews, ...theGuardianNews] };
+  async getNews(query: string): Promise<News[]> {
+    const nytNews = await this.getNYTimesNews(query);
+    const theGuardianNews = await this.getTheGuardianNews(query);
+    const news = nytNews.concat(theGuardianNews);
+    return news;
   }
 }

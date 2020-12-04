@@ -11,9 +11,9 @@ This project contains a Restful API wich expose news in a commom response interf
 
 You are going to build a news aggregator Restful API using The Guardian's and The New York Time's APIs.
 
-- [ ] Your API will have a single endpoint to handle searches.
-- [ ] It should search on both APIs.
+- [x] Your API will have a single endpoint to handle searches.
+- [x] It should search on both APIs.
 - [ ] It should expose a filter that is used to search only by 1 news API.
-- [ ] The Restful API must define a common interface for the responses of the news APIs and both news response payloads must conform to it
+- [x] The Restful API must define a common interface for the responses of the news APIs and both news response payloads must conform to it
 - [ ] The Restful API must be documented, either using the README.md file, Postman or Swagger.
 - [ ] As an extra credit, only one of the two sources should be accessible for unauthenticated users, in order to search from the other one (or both at the same time) the user should be authenticated (using JWT)
