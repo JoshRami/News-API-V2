@@ -1,11 +1,11 @@
-import { HttpService, Injectable } from '@nestjs/common';
+import { HttpService, Injectable, NotFoundException } from '@nestjs/common';
 import { News, NewsSources } from './news.interface';
 
 @Injectable()
 export class NewsService {
   constructor(private httpService: HttpService) {}
 
-  async getNYTimesNews(query: string): Promise<News[]> {
+  private async getNYTimesNews(query: string): Promise<News[]> {
     const apiKey = process.env.THE_NYTIMES_KEY;
     const materialTipe = 'News';
     const url = `https://api.nytimes.com/svc/search/v2/articlesearch.json?q=${query}&type_of_material=${materialTipe}&api-key=${apiKey}`;
@@ -33,7 +33,7 @@ export class NewsService {
     });
   }
 
-  async getTheGuardianNews(query: string): Promise<News[]> {
+  private async getTheGuardianNews(query: string): Promise<News[]> {
     const apiKey = process.env.THE_GUARDIAN_KEY;
     const url = `https://content.guardianapis.com/search?q=${query}&api-key=${apiKey}`;
     const {
@@ -54,10 +54,40 @@ export class NewsService {
       };
     });
   }
-  async getNews(query: string): Promise<News[]> {
-    const nytNews = await this.getNYTimesNews(query);
-    const theGuardianNews = await this.getTheGuardianNews(query);
-    const news = nytNews.concat(theGuardianNews);
+  async getNews(query: string, only: string): Promise<News[]> {
+    const news: News[] = [];
+
+    const isFiltered =
+      only === NewsSources.TheGuardian || only === NewsSources.TheNewYorkTimes;
+
+    if (isFiltered) {
+      const oneSourceNews = await this.getByOneSource(query, only);
+      news.push(...oneSourceNews);
+    } else {
+      const theNYTimesNews = await this.getNYTimesNews(query);
+      const theGuardianNews = await this.getTheGuardianNews(query);
+      news.push(...theGuardianNews, ...theNYTimesNews);
+    }
+
+    if (!news.length) {
+      throw new NotFoundException(
+        `News with search term: ${query} have not been found`,
+      );
+    }
+
+    return news;
+  }
+  private async getByOneSource(query: string, only: string) {
+    const news: News[] = [];
+
+    if (only === NewsSources.TheGuardian) {
+      const theGuardianNews = await this.getTheGuardianNews(query);
+      news.push(...theGuardianNews);
+    }
+    if (only === NewsSources.TheNewYorkTimes) {
+      const theNYTimesNews = await this.getNYTimesNews(query);
+      news.push(...theNYTimesNews);
+    }
     return news;
   }
 }

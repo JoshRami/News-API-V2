@@ -4,25 +4,22 @@ import {
   Injectable,
   PipeTransform,
 } from '@nestjs/common';
-import { NewsSources } from 'src/news/news.interface';
 
 @Injectable()
-export class HideSourcePipe implements PipeTransform {
+export class ValidFilterPipe implements PipeTransform {
   transform(value: any, metadata: ArgumentMetadata) {
     const theNYTimesOption = 'thenytimes';
     const theGuardianOption = 'theguardian';
 
-    const hasValue = value !== undefined;
+    const isPresent = value !== undefined;
 
     const isValid = value === theNYTimesOption || value === theGuardianOption;
-    if (!isValid && hasValue) {
+    if (!isValid && isPresent) {
       throw new BadRequestException(
-        `The param: ${metadata.data} can pass only ${theNYTimesOption} or ${theGuardianOption} `,
+        `The param: ${metadata.data} can pass only ${theNYTimesOption} either ${theGuardianOption} `,
       );
     }
 
-    return value === theNYTimesOption
-      ? NewsSources.TheNewYorkTimes
-      : NewsSources.TheGuardian;
+    return value;
   }
 }
