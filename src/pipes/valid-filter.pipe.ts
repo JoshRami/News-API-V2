@@ -11,10 +11,8 @@ export class ValidFilterPipe implements PipeTransform {
     const theNYTimesOption = 'thenytimes';
     const theGuardianOption = 'theguardian';
 
-    const isPresent = value !== undefined;
-
     const isValid = value === theNYTimesOption || value === theGuardianOption;
-    if (!isValid && isPresent) {
+    if (!isValid && value) {
       throw new BadRequestException(
         `The param: ${metadata.data} can pass only ${theNYTimesOption} either ${theGuardianOption} `,
       );
