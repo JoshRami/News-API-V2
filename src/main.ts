@@ -6,7 +6,7 @@ import * as morgan from 'morgan';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  app.setGlobalPrefix('/api/v1');
+  app.setGlobalPrefix('/api/v2');
 
   app.use(json(), helmet());
   if (process.env.NODE_ENV === 'development') {

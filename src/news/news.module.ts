@@ -1,7 +1,7 @@
 import { HttpModule, Module } from '@nestjs/common';
-import { ValidFilterPipe } from 'src/pipes/valid-filter.pipe';
-import { NotEmptyPipe } from 'src/pipes/not-empty.pipe';
-import { TransformFilterPipe } from 'src/pipes/transform-filter.pipe';
+import { ValidFilterPipe } from 'src/news/pipes/valid-filter.pipe';
+import { NotEmptyPipe } from 'src/news/pipes/not-empty.pipe';
+import { TransformFilterPipe } from 'src/news/pipes/transform-filter.pipe';
 import { NewsController } from './news.controller';
 import { NewsService } from './news.service';
 
