@@ -4,9 +4,11 @@ import { NotEmptyPipe } from 'src/news/pipes/not-empty.pipe';
 import { TransformFilterPipe } from 'src/news/pipes/transform-filter.pipe';
 import { NewsController } from './news.controller';
 import { NewsService } from './news.service';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { New } from './news.entity';
 
 @Module({
-  imports: [HttpModule],
+  imports: [TypeOrmModule.forFeature([New]), HttpModule],
   controllers: [NewsController],
   providers: [NewsService, ValidFilterPipe, NotEmptyPipe, TransformFilterPipe],
 })
