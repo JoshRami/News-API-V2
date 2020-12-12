@@ -1,12 +1,6 @@
+import { isURL } from 'class-validator';
 import { User } from 'src/users/users.entity';
-import {
-  Column,
-  Entity,
-  JoinTable,
-  ManyToMany,
-  OneToMany,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Column, Entity, ManyToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
 export class New {
@@ -14,16 +8,7 @@ export class New {
   id: number;
 
   @Column()
-  webTitle: string;
-
-  @Column()
   webUrl: string;
-
-  @Column({ type: 'timestamptz' })
-  webPublicationDate: Date;
-
-  @Column()
-  source: string;
 
   @ManyToMany((type) => User, (user) => user.news)
   users: User[];

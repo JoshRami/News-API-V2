@@ -3,6 +3,7 @@ import { AppModule } from './app.module';
 import { json } from 'express';
 import * as helmet from 'helmet';
 import * as morgan from 'morgan';
+import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -12,6 +13,7 @@ async function bootstrap() {
   if (process.env.NODE_ENV === 'development') {
     app.use(morgan('tiny'));
   }
+  app.useGlobalPipes(new ValidationPipe());
 
   const port = parseInt(process.env.PORT) || 3000;
   await app.listen(port);
