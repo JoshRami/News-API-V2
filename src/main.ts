@@ -15,7 +15,6 @@ async function bootstrap() {
     app.use(morgan('tiny'));
   }
   app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
-  app.useGlobalGuards(new JwtAuthGuard());
 
   const port = parseInt(process.env.PORT) || 3000;
   await app.listen(port);

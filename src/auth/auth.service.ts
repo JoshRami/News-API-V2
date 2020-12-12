@@ -25,6 +25,8 @@ export class AuthService {
     const access_token = this.jwtService.sign(credentials, {
       secret: process.env.JWTSECRET,
     });
-    this.tokensService.saveToken(access_token, credentials);
+    const jwt: any = this.jwtService.decode(access_token);
+
+    this.tokensService.saveToken(access_token, credentials, jwt.exp);
   }
 }

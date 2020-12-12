@@ -18,13 +18,13 @@ export class TokensService {
     const existToken = await this.tokenRepository.findOne({ token });
     return existToken.endTime < new Date();
   }
-  async saveToken(token: string, credentials: CredentialsDTO) {
+  async saveToken(token: string, credentials: CredentialsDTO, expires: number) {
     const user = await this.usersService.findByCredentials(
       credentials.username,
       credentials.password,
     );
     const newToken = new Token();
-    newToken.endTime = dateMath.hours(new Date(), '60');
+    newToken.endTime = new Date(expires * 1000);
     newToken.user = user;
     newToken.token = token;
     return await this.tokenRepository.save(newToken);

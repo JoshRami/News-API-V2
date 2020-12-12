@@ -12,6 +12,6 @@ export class Token {
   @ManyToOne((type) => User, (user) => user.tokens)
   user: User;
 
-  @Column({ type: 'timestamptz' })
+  @Column({ type: 'timestamp with time zone' })
   endTime: Date;
 }
