@@ -7,13 +7,13 @@ import {
   ParseIntPipe,
   Patch,
   Post,
-  Req,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create.user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { Public } from './public.decorator';
 
 @Controller('users')
 export class UsersController {
@@ -21,6 +21,7 @@ export class UsersController {
 
   @Post()
   @UsePipes(new ValidationPipe())
+  @Public()
   async createUser(@Body() createUserDto: CreateUserDto) {
     await this.userService.createUser(createUserDto);
   }

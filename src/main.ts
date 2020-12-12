@@ -4,6 +4,7 @@ import { json } from 'express';
 import * as helmet from 'helmet';
 import * as morgan from 'morgan';
 import { ValidationPipe } from '@nestjs/common';
+import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -14,6 +15,7 @@ async function bootstrap() {
     app.use(morgan('tiny'));
   }
   app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
+  app.useGlobalGuards(new JwtAuthGuard());
 
   const port = parseInt(process.env.PORT) || 3000;
   await app.listen(port);
