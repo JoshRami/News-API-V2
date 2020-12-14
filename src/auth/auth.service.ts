@@ -1,4 +1,5 @@
 import {
+  HttpException,
   Injectable,
   InternalServerErrorException,
   UnauthorizedException,
@@ -18,11 +19,18 @@ export class AuthService {
   ) {}
 
   async validateUser(username: string, password: string): Promise<any> {
-    const foundUser = await this.usersService.findByCredentials(
-      username,
-      password,
-    );
-    return foundUser;
+    try {
+      const foundUser = await this.usersService.findByCredentials(
+        username,
+        password,
+      );
+      return foundUser;
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new InternalServerErrorException('Error while validating user');
+    }
   }
 
   async login(credentials: CredentialsDTO): Promise<string> {
@@ -38,7 +46,7 @@ export class AuthService {
       );
       return token.token;
     } catch (error) {
-      throw new InternalServerErrorException('Error while creating token');
+      throw new InternalServerErrorException('Error while login');
     }
   }
 }

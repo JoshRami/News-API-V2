@@ -3,6 +3,7 @@ import {
   InternalServerErrorException,
   UnauthorizedException,
   Logger,
+  HttpException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { LessThan, Repository } from 'typeorm';
@@ -19,29 +20,46 @@ export class TokensService {
     private readonly usersService: UsersService,
   ) {}
   async checkToken(token: string) {
-    const existToken = await this.tokenRepository.findOne({ token });
-    if (!existToken) {
-      throw new UnauthorizedException('Invalid token, hacker');
+    try {
+      const existToken = await this.tokenRepository.findOne({ token });
+      if (!existToken) {
+        throw new UnauthorizedException('Invalid token, hacker');
+      }
+      return existToken.endTime < new Date();
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new InternalServerErrorException('Error while checking token');
     }
-    return existToken.endTime < new Date();
   }
   async saveToken(token: string, credentials: CredentialsDTO, expires: number) {
-    const user = await this.usersService.findByCredentials(
-      credentials.username,
-      credentials.password,
-    );
-    const newToken = new Token();
-    newToken.endTime = new Date(expires * 1000);
-    newToken.user = user;
-    newToken.token = token;
-    return await this.tokenRepository.save(newToken);
+    try {
+      const user = await this.usersService.findByCredentials(
+        credentials.username,
+        credentials.password,
+      );
+      const newToken = new Token();
+      newToken.endTime = new Date(expires * 1000);
+      newToken.user = user;
+      newToken.token = token;
+      return await this.tokenRepository.save(newToken);
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new InternalServerErrorException('Error while saving token');
+    }
   }
   async deleteToken(token: string) {
     try {
       const { affected } = await this.tokenRepository.delete({ token });
       return affected === 1;
     } catch (error) {
-      throw new InternalServerErrorException('Error while login out');
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new InternalServerErrorException('Error while deleting token');
     }
   }
   @Cron('*/3 * * * *')

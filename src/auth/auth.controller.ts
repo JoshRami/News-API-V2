@@ -1,4 +1,12 @@
-import { Body, Controller, Post, Req, Res, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  HttpCode,
+  Post,
+  Req,
+  Res,
+  UseGuards,
+} from '@nestjs/common';
 import { Request, Response } from 'express';
 import { TokensService } from 'src/tokens/tokens.service';
 import { AuthService } from './auth.service';
@@ -14,14 +22,15 @@ export class AuthController {
 
   @UseGuards(LocalAuthGuard)
   @Post('login')
+  @HttpCode(200)
   async login(@Body() credentialsDto: CredentialsDTO) {
     const access_token = await this.authService.login(credentialsDto);
     return { access_token };
   }
   @Post('logout')
+  @HttpCode(204)
   async logout(@Req() req: Request) {
     const access_token = req.get('Authorization').split(' ')[1];
-    const isTokenDeleted = await this.tokenService.deleteToken(access_token);
-    return isTokenDeleted;
+    await this.tokenService.deleteToken(access_token);
   }
 }

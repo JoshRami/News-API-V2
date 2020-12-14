@@ -1,4 +1,5 @@
 import {
+  ConflictException,
   HttpException,
   Injectable,
   InternalServerErrorException,
@@ -6,6 +7,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { webUrl } from 'src/accounts/dtos/create-news.dto';
+import { New } from 'src/news/news.entity';
 import { NewsService } from 'src/news/news.service';
 
 import { Repository } from 'typeorm';
@@ -19,11 +21,21 @@ export class UsersService {
     private readonly newsService: NewsService,
     @InjectRepository(User) private readonly userRepository: Repository<User>,
   ) {}
-  async createUser(user: CreateUserDto): Promise<User> {
+  async createUser(user: CreateUserDto) {
     try {
+      const { username } = user;
+      const usernameTaken = await this.userRepository.findOne({
+        username,
+      });
+      if (usernameTaken) {
+        throw new ConflictException(`usename: ${username} is already taken`);
+      }
       const newUser = this.userRepository.create(user);
       return await this.userRepository.save(newUser);
     } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
       throw new InternalServerErrorException('Error while creating user');
     }
   }
@@ -32,6 +44,9 @@ export class UsersService {
       const { affected } = await this.userRepository.delete(id);
       return affected === 1;
     } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
       throw new InternalServerErrorException('Error while deleting user');
     }
   }
@@ -50,13 +65,20 @@ export class UsersService {
     }
   }
   async getUser(id: number) {
-    const user = await this.userRepository.findOne(id);
-    if (!user) {
-      throw new NotFoundException(`User not found, id: ${id}`);
+    try {
+      const user = await this.userRepository.findOne(id);
+      if (!user) {
+        throw new NotFoundException(`User not found, id: ${id}`);
+      }
+      return user;
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new InternalServerErrorException('Error while getting user');
     }
-    return user;
   }
-  async findByCredentials(username: string, password: string) {
+  async findByCredentials(username: string, password: string): Promise<User> {
     try {
       const user = await this.userRepository.findOne({ username, password });
       return user;
@@ -66,23 +88,36 @@ export class UsersService {
       );
     }
   }
-  async getUserNews(id: number) {
+
+  async getUserNews(id: number): Promise<New[]> {
     try {
       const user = await this.userRepository.findOneOrFail(id, {
         relations: ['news'],
       });
       const news = user.news;
+      if (!news.length) {
+        throw new NotFoundException(`News for user: ${id} not found`);
+      }
       return news;
     } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
       throw new InternalServerErrorException(
         `Error while fetchin news from user: ${id}`,
       );
     }
   }
-  async saveNews(id: number, urls: webUrl[]) {
-    const user = await this.userRepository.findOne(id, { relations: ['news'] });
-    const savedNews = await this.newsService.saveNews(urls);
-    user.news = [...user.news, ...savedNews];
-    await this.userRepository.save(user);
+  async saveNews(id: number, urls: webUrl[]): Promise<void> {
+    try {
+      const user = await this.userRepository.findOne(id, {
+        relations: ['news'],
+      });
+      const savedNews = await this.newsService.saveNews(urls);
+      user.news = [...user.news, ...savedNews];
+      await this.userRepository.save(user);
+    } catch (error) {
+      throw new InternalServerErrorException('Error while saving news');
+    }
   }
 }

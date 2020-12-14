@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  ParseIntPipe,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 import { JWTGuard } from 'src/auth/guards/jwt.strategy';
 import { UsersService } from 'src/users/users.service';
 import { SaveNewsDto, webUrl } from './dtos/create-news.dto';
@@ -9,7 +17,7 @@ export class AccountController {
   constructor(private readonly usersService: UsersService) {}
 
   @Get('/:id/news')
-  async getNewsByUser(@Param() id: number) {
+  async getNewsByUser(@Param('id', ParseIntPipe) id: number) {
     const data = await this.usersService.getUserNews(id);
     return { data };
   }

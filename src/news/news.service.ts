@@ -78,26 +78,33 @@ export class NewsService {
   }
 
   async getNews(query: string, only: NewsSources): Promise<News[]> {
-    const news: News[] = [];
+    try {
+      const news: News[] = [];
 
-    const onlyOneSource = Object.values(NewsSources).includes(only);
+      const onlyOneSource = Object.values(NewsSources).includes(only);
 
-    if (onlyOneSource) {
-      const oneSourceNews = await this.getByOneSource(query, only);
-      news.push(...oneSourceNews);
-    } else {
-      const nytNews = await this.getNYTimesNews(query);
-      const theGuardianNews = await this.getTheGuardianNews(query);
-      const gNews = await this.getGNews(query);
-      news.push(...nytNews, ...theGuardianNews, ...gNews);
+      if (onlyOneSource) {
+        const oneSourceNews = await this.getByOneSource(query, only);
+        news.push(...oneSourceNews);
+      } else {
+        const nytNews = await this.getNYTimesNews(query);
+        const theGuardianNews = await this.getTheGuardianNews(query);
+        const gNews = await this.getGNews(query);
+        news.push(...nytNews, ...theGuardianNews, ...gNews);
+      }
+
+      if (!news.length) {
+        throw new NotFoundException(
+          `News with search term: ${query} have not been found`,
+        );
+      }
+      return news;
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new InternalServerErrorException('Error while creating user');
     }
-
-    if (!news.length) {
-      throw new NotFoundException(
-        `News with search term: ${query} have not been found`,
-      );
-    }
-    return news;
   }
   private async getByOneSource(query: string, only: string): Promise<News[]> {
     try {

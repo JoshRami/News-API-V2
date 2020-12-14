@@ -5,6 +5,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from './auth/auth.module';
 import { AccountModule } from './accounts/accounts.module';
 import { ScheduleModule } from '@nestjs/schedule';
+import { NewsModule } from './news/news.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { ScheduleModule } from '@nestjs/schedule';
     UsersModule,
     AuthModule,
     AccountModule,
+    NewsModule,
   ],
   controllers: [],
   providers: [],
