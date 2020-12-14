@@ -2,7 +2,6 @@ import {
   Injectable,
   InternalServerErrorException,
   UnauthorizedException,
-  Logger,
   HttpException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -10,7 +9,7 @@ import { LessThan, Repository } from 'typeorm';
 import { Token } from './tokens.entity';
 import { UsersService } from 'src/users/users.service';
 import { CredentialsDTO } from 'src/auth/dtos/crendetials.dto';
-import { Cron, CronExpression } from '@nestjs/schedule';
+import { Cron } from '@nestjs/schedule';
 
 @Injectable()
 export class TokensService {

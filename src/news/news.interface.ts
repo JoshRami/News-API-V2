@@ -1,5 +1,3 @@
-import { NewsSources } from './sources/sources.enum';
-
 export interface News {
   webTitle: string;
   webUrl: string;

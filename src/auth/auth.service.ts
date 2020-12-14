@@ -2,11 +2,9 @@ import {
   HttpException,
   Injectable,
   InternalServerErrorException,
-  UnauthorizedException,
 } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
-import { User } from 'src/users/users.entity';
 import { TokensService } from 'src/tokens/tokens.service';
 import { CredentialsDTO } from './dtos/crendetials.dto';
 

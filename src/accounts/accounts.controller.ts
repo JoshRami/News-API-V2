@@ -9,7 +9,7 @@ import {
 } from '@nestjs/common';
 import { JWTGuard } from 'src/auth/guards/jwt.strategy';
 import { UsersService } from 'src/users/users.service';
-import { SaveNewsDto, webUrl } from './dtos/create-news.dto';
+import { SaveNewsDto } from './dtos/create-news.dto';
 
 @Controller('me')
 @UseGuards(JWTGuard)

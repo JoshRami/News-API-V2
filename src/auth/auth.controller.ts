@@ -4,7 +4,6 @@ import {
   HttpCode,
   Post,
   Req,
-  Res,
   UseGuards,
 } from '@nestjs/common';
 import { Request, Response } from 'express';

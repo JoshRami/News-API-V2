@@ -1,5 +1,4 @@
 import { Expose, Transform } from 'class-transformer';
-import { NewsSources } from '../sources/sources.enum';
 
 export class NYTNews {
   @Expose({ name: 'headline' })
