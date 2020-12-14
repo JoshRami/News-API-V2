@@ -28,8 +28,9 @@ export class NewsService {
   private async getNYTimesNews(query: string): Promise<News[]> {
     try {
       const key = process.env.THE_NYTIMES_KEY;
+      const url = process.env.THE_NYTIMES_URL;
       const materialType = 'News';
-      const endpoint = `https://api.nytimes.com/svc/search/v2/articlesearch.json?q=${query}&type_of_material=${materialType}&api-key=${key}`;
+      const endpoint = `${url}/svc/search/v2/articlesearch.json?q=${query}&type_of_material=${materialType}&api-key=${key}`;
       const {
         data: {
           response: { docs },
@@ -46,7 +47,9 @@ export class NewsService {
   private async getTheGuardianNews(query: string): Promise<News[]> {
     try {
       const key = process.env.THE_GUARDIAN_KEY;
-      const endpoint = `https://content.guardianapis.com/search?q=${query}&api-key=${key}`;
+      const url = process.env.THE_GUARDIAN_URL;
+
+      const endpoint = `${url}/search?q=${query}&api-key=${key}`;
       const {
         data: {
           response: { results },
@@ -65,7 +68,9 @@ export class NewsService {
   private async getGNews(query: string): Promise<News[]> {
     try {
       const key = process.env.GNEWS_KEY;
-      const endpoint = `https://gnews.io/api/v4/search?q=${query}&token=${key}`;
+      const url = process.env.GNEWS_URL;
+
+      const endpoint = `${url}/api/v4/search?q=${query}&token=${key}`;
       const {
         data: { articles },
       } = await this.httpService.get<gNewsData>(endpoint).toPromise();
