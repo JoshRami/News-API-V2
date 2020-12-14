@@ -9,6 +9,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { webUrl } from 'src/accounts/dtos/create-news.dto';
 import { New } from 'src/news/news.entity';
 import { NewsService } from 'src/news/news.service';
+import { RecommendsService } from 'src/recommendations/recommendations.service';
 
 import { Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create.user.dto';
@@ -19,6 +20,7 @@ import { User } from './users.entity';
 export class UsersService {
   constructor(
     private readonly newsService: NewsService,
+    private readonly recommendService: RecommendsService,
     @InjectRepository(User) private readonly userRepository: Repository<User>,
   ) {}
   async createUser(user: CreateUserDto) {
@@ -118,6 +120,20 @@ export class UsersService {
       await this.userRepository.save(user);
     } catch (error) {
       throw new InternalServerErrorException('Error while saving news');
+    }
+  }
+  async saveRecommends(id: number, urls: webUrl[]): Promise<void> {
+    try {
+      const user = await this.userRepository.findOne(id, {
+        relations: ['recommends'],
+      });
+      const savedRecommends = await this.recommendService.saveRecommendation(
+        urls,
+      );
+      user.recommends = [...user.recommends, ...savedRecommends];
+      await this.userRepository.save(user);
+    } catch (error) {
+      throw new InternalServerErrorException('Error while saving recommends');
     }
   }
 }

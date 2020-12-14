@@ -1,4 +1,5 @@
 import { New } from 'src/news/news.entity';
+import { Recommend } from 'src/recommendations/recommendations.entity';
 import { Token } from 'src/tokens/tokens.entity';
 import {
   Column,
@@ -26,4 +27,8 @@ export class User {
   @ManyToMany((type) => New, (oneNew) => oneNew.users)
   @JoinTable({ name: 'users_news' })
   news: New[];
+
+  @ManyToMany((type) => Recommend, (recommend) => recommend.users)
+  @JoinTable({ name: 'users_recommendations' })
+  recommends: Recommend[];
 }
