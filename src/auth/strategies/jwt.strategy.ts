@@ -1,23 +1,31 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  CanActivate,
+  ExecutionContext,
+  Inject,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { TokensService } from 'src/tokens/tokens.service';
 
-@Injectable()
-export class JwtStrategy extends PassportStrategy(Strategy) {
-  constructor(private readonly tokensService: TokensService) {
-    super({
-      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-      ignoreExpiration: false,
-      secretOrKey: process.env.JWTSECRET,
-    });
+export class ReqStrategy implements CanActivate {
+  constructor(
+    @Inject('TokensService') private readonly tokensService: TokensService,
+  ) {}
+
+  canActivate(context: ExecutionContext): boolean | Promise<boolean> {
+    const request = context.switchToHttp().getRequest();
+    const access_token = request.get('Authorization').split(' ')[1];
+
+    return this.validate(access_token);
   }
 
   async validate(token: string) {
-    const isExpiredToken = this.tokensService.checkToken(token);
-    if (!isExpiredToken) {
-      throw new UnauthorizedException(`Ugh toe`);
+    const isExpiredToken = await this.tokensService.checkToken(token);
+    if (isExpiredToken) {
+      throw new UnauthorizedException(`Ugh expired token`);
     }
-    return isExpiredToken;
+    return true;
   }
 }

@@ -20,7 +20,6 @@ export class TokensService {
   ) {}
   async checkToken(token: string) {
     const existToken = await this.tokenRepository.findOne({ token });
-
     if (!existToken) {
       throw new UnauthorizedException('Invalid token, hacker');
     }

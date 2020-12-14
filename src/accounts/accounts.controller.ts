@@ -1,10 +1,10 @@
 import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
-import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { ReqStrategy } from 'src/auth/strategies/jwt.strategy';
 import { UsersService } from 'src/users/users.service';
 import { SaveNewsDto, webUrl } from './dtos/create-news.dto';
 
 @Controller('me')
-@UseGuards(new JwtAuthGuard())
+@UseGuards(ReqStrategy)
 export class AccountController {
   constructor(private readonly usersService: UsersService) {}
 
