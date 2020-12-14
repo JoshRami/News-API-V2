@@ -2,14 +2,14 @@ import {
   Injectable,
   InternalServerErrorException,
   UnauthorizedException,
+  Logger,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import * as dateMath from 'date-arithmetic';
+import { LessThan, Repository } from 'typeorm';
 import { Token } from './tokens.entity';
-import { User } from 'src/users/users.entity';
 import { UsersService } from 'src/users/users.service';
 import { CredentialsDTO } from 'src/auth/dtos/crendetials.dto';
+import { Cron, CronExpression } from '@nestjs/schedule';
 
 @Injectable()
 export class TokensService {
@@ -42,6 +42,14 @@ export class TokensService {
       return affected === 1;
     } catch (error) {
       throw new InternalServerErrorException('Error while login out');
+    }
+  }
+  @Cron('*/3 * * * *')
+  async handleCron() {
+    try {
+      await this.tokenRepository.delete({ endTime: LessThan(new Date()) });
+    } catch (error) {
+      console.error('error while deleting expired tokens');
     }
   }
 }

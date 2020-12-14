@@ -8,10 +8,10 @@ import {
 } from '@nestjs/common';
 import { NewsService } from './news.service';
 import { NewsQueryDto } from './dtos/news-query.dto';
-import { ReqStrategy } from 'src/auth/strategies/jwt.strategy';
+import { JWTGuard } from 'src/auth/guards/jwt.strategy';
 
 @Controller('news')
-@UseGuards(ReqStrategy)
+@UseGuards(JWTGuard)
 export class NewsController {
   constructor(private readonly newsService: NewsService) {}
 

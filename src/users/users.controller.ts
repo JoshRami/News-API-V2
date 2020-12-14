@@ -14,7 +14,7 @@ import {
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create.user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { ReqStrategy } from 'src/auth/strategies/jwt.strategy';
+import { JWTGuard } from 'src/auth/guards/jwt.strategy';
 
 @Controller('users')
 export class UsersController {
@@ -27,7 +27,7 @@ export class UsersController {
   }
 
   @Delete(':id')
-  @UseGuards(ReqStrategy)
+  @UseGuards(JWTGuard)
   async deleteUser(@Param('id', ParseIntPipe) id: number) {
     const deleted = await this.userService.deleteUser(id);
     if (!deleted) {
@@ -37,7 +37,7 @@ export class UsersController {
 
   @Patch(':id')
   @UsePipes(new ValidationPipe())
-  @UseGuards(ReqStrategy)
+  @UseGuards(JWTGuard)
   async updateUser(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateUserDto: UpdateUserDto,

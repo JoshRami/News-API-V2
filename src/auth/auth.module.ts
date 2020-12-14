@@ -5,7 +5,7 @@ import { TokensModule } from 'src/tokens/tokens.module';
 import { UsersModule } from '../users/users.module';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
-import { ReqStrategy } from './strategies/jwt.strategy';
+import { JWTGuard } from './guards/jwt.strategy';
 import { LocalStrategy } from './strategies/local.strategy';
 
 @Module({
@@ -19,7 +19,7 @@ import { LocalStrategy } from './strategies/local.strategy';
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, LocalStrategy, ReqStrategy],
+  providers: [AuthService, LocalStrategy, JWTGuard],
   exports: [AuthService],
 })
 export class AuthModule {}

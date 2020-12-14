@@ -9,7 +9,7 @@ import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { TokensService } from 'src/tokens/tokens.service';
 
-export class ReqStrategy implements CanActivate {
+export class JWTGuard implements CanActivate {
   constructor(
     @Inject('TokensService') private readonly tokensService: TokensService,
   ) {}
