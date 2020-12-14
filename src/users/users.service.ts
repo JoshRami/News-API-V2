@@ -136,4 +136,22 @@ export class UsersService {
       throw new InternalServerErrorException('Error while saving recommends');
     }
   }
+  async getUserRecommends(id: number) {
+    try {
+      const { recommends } = await this.userRepository.findOne(id, {
+        relations: ['recommends'],
+      });
+      if (!recommends.length) {
+        throw new NotFoundException(`recommends for user : ${id} not found`);
+      }
+      return recommends;
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new InternalServerErrorException(
+        `Error while fetchin news from user: ${id}`,
+      );
+    }
+  }
 }

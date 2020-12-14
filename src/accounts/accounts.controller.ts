@@ -51,4 +51,9 @@ export class AccountController {
     }
     return this.usersService.saveRecommends(id, urls);
   }
+  @Get('recommendations')
+  async getRecommendations(@Param('id', ParseIntPipe) id: number) {
+    const data = this.usersService.getUserRecommends(id);
+    return { data };
+  }
 }
