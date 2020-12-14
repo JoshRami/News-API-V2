@@ -2,7 +2,6 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { TokensService } from 'src/tokens/tokens.service';
-import { UsersService } from 'src/users/users.service';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -15,10 +14,10 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(token: string) {
-    const isValidToken = this.tokensService.checkToken(token);
-    if (!isValidToken) {
-      throw new UnauthorizedException(`Invalid token provided`);
+    const isExpiredToken = this.tokensService.checkToken(token);
+    if (!isExpiredToken) {
+      throw new UnauthorizedException(`Ugh toe`);
     }
-    return isValidToken;
+    return isExpiredToken;
   }
 }

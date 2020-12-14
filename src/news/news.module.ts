@@ -9,5 +9,6 @@ import { New } from './news.entity';
   imports: [TypeOrmModule.forFeature([New]), HttpModule],
   controllers: [NewsController],
   providers: [NewsService],
+  exports: [NewsService],
 })
 export class NewsModule {}

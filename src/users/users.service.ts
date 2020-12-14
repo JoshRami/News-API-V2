@@ -5,6 +5,9 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { webUrl } from 'src/accounts/dtos/create-news.dto';
+import { NewsService } from 'src/news/news.service';
+
 import { Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create.user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -13,6 +16,7 @@ import { User } from './users.entity';
 @Injectable()
 export class UsersService {
   constructor(
+    private readonly newsService: NewsService,
     @InjectRepository(User) private readonly userRepository: Repository<User>,
   ) {}
   async createUser(user: CreateUserDto): Promise<User> {
@@ -61,5 +65,24 @@ export class UsersService {
         'Error while fetching user by credentials',
       );
     }
+  }
+  async getUserNews(id: number) {
+    try {
+      const user = await this.userRepository.findOneOrFail(id, {
+        relations: ['news'],
+      });
+      const news = user.news;
+      return news;
+    } catch (error) {
+      throw new InternalServerErrorException(
+        `Error while fetchin news from user: ${id}`,
+      );
+    }
+  }
+  async saveNews(id: number, urls: webUrl[]) {
+    const user = await this.userRepository.findOne(id, { relations: ['news'] });
+    const savedNews = await this.newsService.saveNews(urls);
+    user.news = [...user.news, ...savedNews];
+    await this.userRepository.save(user);
   }
 }

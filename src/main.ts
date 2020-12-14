@@ -4,7 +4,6 @@ import { json } from 'express';
 import * as helmet from 'helmet';
 import * as morgan from 'morgan';
 import { ValidationPipe } from '@nestjs/common';
-import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);

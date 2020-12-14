@@ -1,16 +1,27 @@
-import { Body, Controller, Post, UseGuards } from '@nestjs/common';
-import { Public } from 'src/users/public.decorator';
+import { Body, Controller, Post, Req, Res, UseGuards } from '@nestjs/common';
+import { Request, Response } from 'express';
+import { TokensService } from 'src/tokens/tokens.service';
 import { AuthService } from './auth.service';
 import { CredentialsDTO } from './dtos/crendetials.dto';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private readonly tokenService: TokensService,
+  ) {}
 
   @UseGuards(LocalAuthGuard)
   @Post('login')
   async login(@Body() credentialsDto: CredentialsDTO) {
-    await this.authService.login(credentialsDto);
+    const access_token = await this.authService.login(credentialsDto);
+    return { access_token };
+  }
+  @Post('logout')
+  async logout(@Req() req: Request) {
+    const access_token = req.get('Authorization').split(' ')[1];
+    const isTokenDeleted = await this.tokenService.deleteToken(access_token);
+    return isTokenDeleted;
   }
 }

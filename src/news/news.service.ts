@@ -5,16 +5,25 @@ import {
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
 import { plainToClass } from 'class-transformer';
+import { webUrl } from 'src/accounts/dtos/create-news.dto';
+import { Token } from 'src/tokens/tokens.entity';
+import { UsersService } from 'src/users/users.service';
+import { Repository } from 'typeorm';
 import { GNews } from './docs/gnews.doc';
 import { NYTNews } from './docs/nyt-news.doc';
 import { TheGuardianNews } from './docs/theguardian.doc';
+import { New } from './news.entity';
 import { News } from './news.interface';
 import { NewsSources } from './sources/sources.enum';
 
 @Injectable()
 export class NewsService {
-  constructor(private httpService: HttpService) {}
+  constructor(
+    private readonly httpService: HttpService,
+    @InjectRepository(New) private readonly newsRepository: Repository<New>,
+  ) {}
 
   private async getNYTimesNews(query: string): Promise<News[]> {
     try {
@@ -112,6 +121,30 @@ export class NewsService {
       throw new InternalServerErrorException(
         `Error while getting news from: ${only}`,
       );
+    }
+  }
+
+  async saveNews(urls: webUrl[]): Promise<New[]> {
+    try {
+      const {
+        identifiers,
+      } = await this.newsRepository
+        .createQueryBuilder()
+        .insert()
+        .into(New)
+        .values(urls)
+        .execute();
+      const newsIds = identifiers.map((identifier) => {
+        return identifier.id;
+      });
+
+      const insertedNews = await this.newsRepository
+        .createQueryBuilder()
+        .where('id in (:...newsIds)', { newsIds })
+        .getMany();
+      return insertedNews;
+    } catch (error) {
+      throw new InternalServerErrorException('error while inserting news');
     }
   }
 }

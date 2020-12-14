@@ -1,4 +1,8 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import { User } from 'src/users/users.entity';
@@ -21,12 +25,20 @@ export class AuthService {
     return foundUser;
   }
 
-  async login(credentials: CredentialsDTO) {
-    const access_token = this.jwtService.sign(credentials, {
-      secret: process.env.JWTSECRET,
-    });
-    const jwt: any = this.jwtService.decode(access_token);
-
-    this.tokensService.saveToken(access_token, credentials, jwt.exp);
+  async login(credentials: CredentialsDTO): Promise<string> {
+    try {
+      const access_token = this.jwtService.sign(credentials, {
+        secret: process.env.JWTSECRET,
+      });
+      const jwt: any = this.jwtService.decode(access_token);
+      const token = await this.tokensService.saveToken(
+        access_token,
+        credentials,
+        jwt.exp,
+      );
+      return token.token;
+    } catch (error) {
+      throw new InternalServerErrorException('Error while creating token');
+    }
   }
 }

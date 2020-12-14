@@ -1,4 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import * as dateMath from 'date-arithmetic';
@@ -16,6 +20,10 @@ export class TokensService {
   ) {}
   async checkToken(token: string) {
     const existToken = await this.tokenRepository.findOne({ token });
+
+    if (!existToken) {
+      throw new UnauthorizedException('Invalid token, hacker');
+    }
     return existToken.endTime < new Date();
   }
   async saveToken(token: string, credentials: CredentialsDTO, expires: number) {
@@ -28,5 +36,13 @@ export class TokensService {
     newToken.user = user;
     newToken.token = token;
     return await this.tokenRepository.save(newToken);
+  }
+  async deleteToken(token: string) {
+    try {
+      const { affected } = await this.tokenRepository.delete({ token });
+      return affected === 1;
+    } catch (error) {
+      throw new InternalServerErrorException('Error while login out');
+    }
   }
 }
