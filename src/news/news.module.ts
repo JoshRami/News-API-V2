@@ -1,13 +1,14 @@
 import { HttpModule, Module } from '@nestjs/common';
-import { ValidFilterPipe } from 'src/pipes/valid-filter.pipe';
-import { NotEmptyPipe } from 'src/pipes/not-empty.pipe';
-import { TransformFilterPipe } from 'src/pipes/transform-filter.pipe';
+
 import { NewsController } from './news.controller';
 import { NewsService } from './news.service';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { New } from './news.entity';
 
 @Module({
-  imports: [HttpModule],
+  imports: [TypeOrmModule.forFeature([New]), HttpModule],
   controllers: [NewsController],
-  providers: [NewsService, ValidFilterPipe, NotEmptyPipe, TransformFilterPipe],
+  providers: [NewsService],
+  exports: [NewsService],
 })
 export class NewsModule {}

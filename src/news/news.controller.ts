@@ -1,19 +1,17 @@
-import { Controller, Get, Query } from '@nestjs/common';
-import { ValidFilterPipe } from 'src/pipes/valid-filter.pipe';
-import { NotEmptyPipe } from 'src/pipes/not-empty.pipe';
+import { Controller, Get, Query, UseGuards } from '@nestjs/common';
 import { NewsService } from './news.service';
-import { TransformFilterPipe } from 'src/pipes/transform-filter.pipe';
+import { NewsQueryDto } from './dtos/news-query.dto';
+import { JWTGuard } from 'src/auth/guards/jwt.strategy';
 
 @Controller('news')
+@UseGuards(JWTGuard)
 export class NewsController {
   constructor(private readonly newsService: NewsService) {}
 
   @Get()
-  async getNews(
-    @Query('q', NotEmptyPipe) query: string,
-    @Query('only', ValidFilterPipe, TransformFilterPipe) hide: string,
-  ) {
-    const data = await this.newsService.getNews(query, hide);
+  async getNews(@Query() newsQuery: NewsQueryDto) {
+    const { q, only } = newsQuery;
+    const data = await this.newsService.getNews(q, only);
     return { data };
   }
 }
