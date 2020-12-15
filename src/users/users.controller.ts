@@ -14,9 +14,11 @@ import {
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create.user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { JWTGuard } from 'src/auth/guards/jwt.strategy';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { WhitelistGuard } from 'src/auth/guards/jwt-whitelist.guard';
 
 @Controller('users')
+@UseGuards(JwtAuthGuard, WhitelistGuard)
 export class UsersController {
   constructor(private readonly userService: UsersService) {}
 
@@ -27,7 +29,6 @@ export class UsersController {
   }
 
   @Delete(':id')
-  @UseGuards(JWTGuard)
   async deleteUser(@Param('id', ParseIntPipe) id: number) {
     const deleted = await this.userService.deleteUser(id);
     if (!deleted) {
@@ -37,7 +38,6 @@ export class UsersController {
 
   @Patch(':id')
   @UsePipes(new ValidationPipe())
-  @UseGuards(JWTGuard)
   async updateUser(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateUserDto: UpdateUserDto,

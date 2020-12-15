@@ -24,7 +24,6 @@ export class TokensService {
       if (!existToken) {
         throw new UnauthorizedException('Invalid token, hacker');
       }
-      return existToken.endTime < new Date();
     } catch (error) {
       if (error instanceof HttpException) {
         throw error;
@@ -32,12 +31,9 @@ export class TokensService {
       throw new InternalServerErrorException('Error while checking token');
     }
   }
-  async saveToken(token: string, credentials: CredentialsDTO, expires: number) {
+  async saveToken(token: string, userId: number, expires: number) {
     try {
-      const user = await this.usersService.findByCredentials(
-        credentials.username,
-        credentials.password,
-      );
+      const user = await this.usersService.getUser(userId);
       const newToken = new Token();
       newToken.endTime = new Date(expires * 1000);
       newToken.user = user;

@@ -9,14 +9,12 @@ import {
   Post,
   UseGuards,
 } from '@nestjs/common';
-import { JWTGuard } from 'src/auth/guards/jwt.strategy';
 import { RecommendsService } from 'src/recommendations/recommendations.service';
 import { UsersService } from 'src/users/users.service';
 import { SaveNewsDto } from './dtos/create-news.dto';
 import { SaveRecommends } from './dtos/save-recommends.dto';
 
 @Controller('me/:id')
-@UseGuards(JWTGuard)
 export class AccountController {
   constructor(
     private readonly usersService: UsersService,
