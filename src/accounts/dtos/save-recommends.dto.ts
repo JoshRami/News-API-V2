@@ -1,12 +1,5 @@
 import { Type } from 'class-transformer';
-import {
-  ArrayMinSize,
-  isNotEmptyObject,
-  IsNotEmptyObject,
-  IsUrl,
-  ValidateBy,
-  ValidateNested,
-} from 'class-validator';
+import { ArrayMinSize, IsUrl, ValidateNested } from 'class-validator';
 import { CredentialsDTO } from 'src/auth/dtos/crendetials.dto';
 
 export class webUrl {

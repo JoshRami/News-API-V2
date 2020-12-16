@@ -8,7 +8,7 @@ import { JwtService } from '@nestjs/jwt';
 import { TokensService } from 'src/tokens/tokens.service';
 import { CredentialDoc } from './docs/credentials.doc';
 import { User } from 'src/users/users.entity';
-import { classToClass, classToPlain, plainToClass } from 'class-transformer';
+import { plainToClass } from 'class-transformer';
 import { UserDoc } from './docs/user.doc';
 
 @Injectable()
@@ -25,7 +25,6 @@ export class AuthService {
         username,
         password,
       );
-
       return foundUser;
     } catch (error) {
       if (error instanceof HttpException) {
@@ -41,15 +40,10 @@ export class AuthService {
     });
     const { username, sub } = tokenData;
     try {
-      const access_token = this.jwtService.sign(
-        { username, sub },
-        {
-          secret: process.env.JWTSECRET,
-        },
-      );
-      const jwt: any = this.jwtService.decode(access_token);
+      const accessToken = this.jwtService.sign({ username, sub });
+      const jwt: any = this.jwtService.decode(accessToken);
       const token = await this.tokensService.saveToken(
-        access_token,
+        accessToken,
         sub,
         jwt.exp,
       );

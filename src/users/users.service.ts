@@ -23,15 +23,9 @@ export class UsersService {
     private readonly recommendService: RecommendsService,
     @InjectRepository(User) private readonly userRepository: Repository<User>,
   ) {}
+
   async createUser(user: CreateUserDto) {
     try {
-      const { username } = user;
-      const usernameTaken = await this.userRepository.findOne({
-        username,
-      });
-      if (usernameTaken) {
-        throw new ConflictException(`usename: ${username} is already taken`);
-      }
       const newUser = this.userRepository.create(user);
       return await this.userRepository.save(newUser);
     } catch (error) {
@@ -41,6 +35,7 @@ export class UsersService {
       throw new InternalServerErrorException('Error while creating user');
     }
   }
+
   async deleteUser(id: number): Promise<boolean> {
     try {
       const { affected } = await this.userRepository.delete(id);
@@ -52,6 +47,7 @@ export class UsersService {
       throw new InternalServerErrorException('Error while deleting user');
     }
   }
+
   async updateUser(id: number, updateUserDto: UpdateUserDto): Promise<User> {
     try {
       const user = await this.userRepository.findOneOrFail(id);
@@ -66,6 +62,7 @@ export class UsersService {
       throw new InternalServerErrorException('Error while updating user');
     }
   }
+
   async getUser(id: number) {
     try {
       const user = await this.userRepository.findOne(id);
@@ -80,6 +77,7 @@ export class UsersService {
       throw new InternalServerErrorException('Error while getting user');
     }
   }
+
   async findByCredentials(username: string, password: string): Promise<User> {
     try {
       const user = await this.userRepository.findOne({ username, password });
@@ -110,6 +108,7 @@ export class UsersService {
       );
     }
   }
+
   async saveNews(id: number, urls: webUrl[]): Promise<void> {
     try {
       const user = await this.userRepository.findOne(id, {
@@ -122,6 +121,7 @@ export class UsersService {
       throw new InternalServerErrorException('Error while saving news');
     }
   }
+
   async saveRecommends(id: number, urls: webUrl[]): Promise<void> {
     try {
       const user = await this.userRepository.findOne(id, {
@@ -136,6 +136,7 @@ export class UsersService {
       throw new InternalServerErrorException('Error while saving recommends');
     }
   }
+
   async getUserRecommends(id: number) {
     try {
       const { recommends } = await this.userRepository.findOne(id, {

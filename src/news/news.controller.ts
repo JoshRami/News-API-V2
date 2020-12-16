@@ -10,7 +10,7 @@ export class NewsController {
   constructor(private readonly newsService: NewsService) {}
 
   @Get()
-  async getNews(@Query() newsQuery: NewsQueryDto, @Req() req) {
+  async getNews(@Query() newsQuery: NewsQueryDto) {
     const { q, only } = newsQuery;
     const data = await this.newsService.getNews(q, only);
     return { data };

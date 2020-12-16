@@ -29,11 +29,12 @@ export class AuthController {
     const accessToken = await this.authService.login(user);
     return { accessToken };
   }
+
   @Post('logout')
   @HttpCode(204)
   @UseGuards(JwtAuthGuard, WhitelistGuard)
   async logout(@Req() req: Request) {
-    const access_token = req.get('Authorization').split(' ')[1];
-    await this.tokenService.deleteToken(access_token);
+    const accessToken = req.get('Authorization').split(' ')[1];
+    await this.tokenService.deleteToken(accessToken);
   }
 }

@@ -1,14 +1,10 @@
 import {
-  HttpException,
-  HttpService,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { url } from 'inspector';
 import { webUrl } from 'src/accounts/dtos/create-news.dto';
-import { New } from 'src/news/news.entity';
 import { Repository } from 'typeorm';
 import { Recommend } from './recommendations.entity';
 
@@ -37,6 +33,7 @@ export class RecommendsService {
         .createQueryBuilder()
         .where('id in (:...recommendsIds)', { recommendsIds })
         .getMany();
+
       return insertedRecommends;
     } catch (error) {
       throw new InternalServerErrorException(

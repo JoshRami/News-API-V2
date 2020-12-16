@@ -3,11 +3,9 @@ import {
   Controller,
   ForbiddenException,
   Get,
-  HttpException,
   Param,
   ParseIntPipe,
   Post,
-  UseGuards,
 } from '@nestjs/common';
 import { RecommendsService } from 'src/recommendations/recommendations.service';
 import { UsersService } from 'src/users/users.service';
@@ -26,6 +24,7 @@ export class AccountController {
     const data = await this.usersService.getUserNews(id);
     return { data };
   }
+
   @Post('news')
   async saveNews(
     @Param('id', ParseIntPipe) id: number,

@@ -16,8 +16,8 @@ export class WhitelistGuard implements CanActivate {
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
-    const access_token = request.get('Authorization')?.split(' ')[1];
-    await this.tokensService.checkToken(access_token);
+    const accessToken = request.get('Authorization')?.split(' ')[1];
+    await this.tokensService.checkToken(accessToken);
     return true;
   }
 }

@@ -18,6 +18,7 @@ export class TokensService {
     private readonly tokenRepository: Repository<Token>,
     private readonly usersService: UsersService,
   ) {}
+
   async checkToken(token: string) {
     try {
       const existToken = await this.tokenRepository.findOne({ token });
@@ -31,6 +32,7 @@ export class TokensService {
       throw new InternalServerErrorException('Error while checking token');
     }
   }
+
   async saveToken(token: string, userId: number, expires: number) {
     try {
       const user = await this.usersService.getUser(userId);
@@ -58,7 +60,7 @@ export class TokensService {
     }
   }
   @Cron('*/3 * * * *')
-  async handleCron() {
+  async deleteExpiredTokens() {
     try {
       await this.tokenRepository.delete({ endTime: LessThan(new Date()) });
     } catch (error) {
