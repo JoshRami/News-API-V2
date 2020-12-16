@@ -2,7 +2,6 @@ import {
   BadRequestException,
   Body,
   Controller,
-  ForbiddenException,
   Get,
   Param,
   ParseIntPipe,
@@ -49,6 +48,7 @@ export class AccountController {
     const recommends = await this.usersService.saveRecommends(id, urls);
     return { data: recommends };
   }
+
   @Get('recommendations')
   async getRecommendations(@Req() req) {
     const { id } = req.user;

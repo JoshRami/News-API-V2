@@ -1,12 +1,5 @@
-import {
-  CanActivate,
-  ExecutionContext,
-  Inject,
-  Injectable,
-  UnauthorizedException,
-} from '@nestjs/common';
-import { PassportStrategy } from '@nestjs/passport';
-import { ExtractJwt, Strategy } from 'passport-jwt';
+import { CanActivate, ExecutionContext, Inject } from '@nestjs/common';
+
 import { TokensService } from 'src/tokens/tokens.service';
 
 export class WhitelistGuard implements CanActivate {
