@@ -8,7 +8,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { LessThan, Repository } from 'typeorm';
 import { Token } from './tokens.entity';
 import { UsersService } from 'src/users/users.service';
-import { CredentialsDTO } from 'src/auth/dtos/crendetials.dto';
 import { Cron } from '@nestjs/schedule';
 
 @Injectable()

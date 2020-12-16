@@ -4,7 +4,7 @@ import { classToPlain, plainToClass } from 'class-transformer';
 
 import { Strategy } from 'passport-local';
 import { AuthService } from '../auth.service';
-import { UserDoc } from '../docs/user.doc';
+import { UserDoc } from '../../users/docs/user.doc';
 
 @Injectable()
 export class LocalStrategy extends PassportStrategy(Strategy) {

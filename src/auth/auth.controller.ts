@@ -9,7 +9,6 @@ import {
 import { Request } from 'express';
 import { TokensService } from 'src/tokens/tokens.service';
 import { AuthService } from './auth.service';
-import { CredentialsDTO } from './dtos/crendetials.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { WhitelistGuard } from './guards/jwt-whitelist.guard';
 import { LocalAuthGuard } from './guards/local-auth.guard';

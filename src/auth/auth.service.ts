@@ -6,10 +6,10 @@ import {
 import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import { TokensService } from 'src/tokens/tokens.service';
-import { CredentialDoc } from './docs/credentials.doc';
+import { CredentialDoc } from './docs/token.doc';
 import { User } from 'src/users/users.entity';
 import { plainToClass } from 'class-transformer';
-import { UserDoc } from './docs/user.doc';
+import { UserDoc } from '../users/docs/user.doc';
 
 @Injectable()
 export class AuthService {
@@ -35,12 +35,16 @@ export class AuthService {
   }
 
   async login(user: UserDoc): Promise<string> {
-    const tokenData = plainToClass(CredentialDoc, user, {
-      excludeExtraneousValues: true,
-    });
-    const { username, sub } = tokenData;
     try {
-      const accessToken = this.jwtService.sign({ username, sub });
+      const tokenData = plainToClass(CredentialDoc, user, {
+        excludeExtraneousValues: true,
+      });
+      const { username, sub } = tokenData;
+
+      const accessToken = this.jwtService.sign(
+        { username, sub },
+        { secret: process.env.JWTSECRET },
+      );
       const jwt: any = this.jwtService.decode(accessToken);
       const token = await this.tokensService.saveToken(
         accessToken,

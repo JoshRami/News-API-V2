@@ -2,8 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { classToPlain, plainToClass } from 'class-transformer';
 import { ExtractJwt, Strategy } from 'passport-jwt';
-import { CredentialDoc } from '../docs/credentials.doc';
-import { UserDoc } from '../docs/user.doc';
+
+import { TokenDto } from '../dtos/token.dto';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -14,10 +14,11 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     });
   }
 
-  async validate(payload: CredentialDoc) {
-    const user = plainToClass(UserDoc, payload, {
+  async validate(payload: any) {
+    const user = plainToClass(TokenDto, payload, {
       excludeExtraneousValues: true,
     });
-    return classToPlain(user);
+    const { username, id } = user;
+    return { username, id };
   }
 }

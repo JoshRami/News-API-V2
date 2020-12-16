@@ -18,18 +18,17 @@ import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { WhitelistGuard } from 'src/auth/guards/jwt-whitelist.guard';
 
 @Controller('users')
-@UseGuards(JwtAuthGuard, WhitelistGuard)
 export class UsersController {
   constructor(private readonly userService: UsersService) {}
 
   @Post()
-  @UsePipes(new ValidationPipe())
   async createUser(@Body() createUserDto: CreateUserDto) {
     const user = await this.userService.createUser(createUserDto);
     return { data: user };
   }
 
   @Delete(':id')
+  @UseGuards(JwtAuthGuard, WhitelistGuard)
   async deleteUser(@Param('id', ParseIntPipe) id: number) {
     const deleted = await this.userService.deleteUser(id);
     if (!deleted) {
@@ -38,7 +37,7 @@ export class UsersController {
   }
 
   @Patch(':id')
-  @UsePipes(new ValidationPipe())
+  @UseGuards(JwtAuthGuard, WhitelistGuard)
   async updateUser(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateUserDto: UpdateUserDto,
