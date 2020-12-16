@@ -1,13 +1,6 @@
 import { Type } from 'class-transformer';
-import {
-  ArrayMinSize,
-  isNotEmptyObject,
-  IsNotEmptyObject,
-  IsUrl,
-  ValidateBy,
-  ValidateNested,
-} from 'class-validator';
-import { CredentialsDTO } from 'src/auth/dtos/crendetials.dto';
+import { ArrayMinSize, IsUrl, ValidateNested } from 'class-validator';
+import { CreateUserDto } from 'src/users/dto/create.user.dto';
 
 export class webUrl {
   @IsUrl()
@@ -21,6 +14,6 @@ export class SaveRecommends {
   urls: webUrl[];
 
   @ValidateNested({ each: true })
-  @Type(() => CredentialsDTO)
-  user: CredentialsDTO;
+  @Type(() => CreateUserDto)
+  user: CreateUserDto;
 }

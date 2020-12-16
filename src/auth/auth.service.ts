@@ -6,7 +6,10 @@ import {
 import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import { TokensService } from 'src/tokens/tokens.service';
-import { CredentialsDTO } from './dtos/crendetials.dto';
+import { CredentialDoc } from './docs/token.doc';
+import { User } from 'src/users/users.entity';
+import { plainToClass } from 'class-transformer';
+import { UserDoc } from '../users/docs/user.doc';
 
 @Injectable()
 export class AuthService {
@@ -16,7 +19,7 @@ export class AuthService {
     private readonly tokensService: TokensService,
   ) {}
 
-  async validateUser(username: string, password: string): Promise<any> {
+  async validateUser(username: string, password: string): Promise<User> {
     try {
       const foundUser = await this.usersService.findByCredentials(
         username,
@@ -31,15 +34,21 @@ export class AuthService {
     }
   }
 
-  async login(credentials: CredentialsDTO): Promise<string> {
+  async login(user: UserDoc): Promise<string> {
     try {
-      const access_token = this.jwtService.sign(credentials, {
-        secret: process.env.JWTSECRET,
+      const tokenData = plainToClass(CredentialDoc, user, {
+        excludeExtraneousValues: true,
       });
-      const jwt: any = this.jwtService.decode(access_token);
+      const { username, sub } = tokenData;
+
+      const accessToken = this.jwtService.sign(
+        { username, sub },
+        { secret: process.env.JWTSECRET },
+      );
+      const jwt: any = this.jwtService.decode(accessToken);
       const token = await this.tokensService.saveToken(
-        access_token,
-        credentials,
+        accessToken,
+        sub,
         jwt.exp,
       );
       return token.token;

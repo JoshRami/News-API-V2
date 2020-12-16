@@ -8,7 +8,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { LessThan, Repository } from 'typeorm';
 import { Token } from './tokens.entity';
 import { UsersService } from 'src/users/users.service';
-import { CredentialsDTO } from 'src/auth/dtos/crendetials.dto';
 import { Cron } from '@nestjs/schedule';
 
 @Injectable()
@@ -18,13 +17,13 @@ export class TokensService {
     private readonly tokenRepository: Repository<Token>,
     private readonly usersService: UsersService,
   ) {}
+
   async checkToken(token: string) {
     try {
       const existToken = await this.tokenRepository.findOne({ token });
       if (!existToken) {
         throw new UnauthorizedException('Invalid token, hacker');
       }
-      return existToken.endTime < new Date();
     } catch (error) {
       if (error instanceof HttpException) {
         throw error;
@@ -32,12 +31,10 @@ export class TokensService {
       throw new InternalServerErrorException('Error while checking token');
     }
   }
-  async saveToken(token: string, credentials: CredentialsDTO, expires: number) {
+
+  async saveToken(token: string, userId: number, expires: number) {
     try {
-      const user = await this.usersService.findByCredentials(
-        credentials.username,
-        credentials.password,
-      );
+      const user = await this.usersService.getUser(userId);
       const newToken = new Token();
       newToken.endTime = new Date(expires * 1000);
       newToken.user = user;
@@ -62,7 +59,7 @@ export class TokensService {
     }
   }
   @Cron('*/3 * * * *')
-  async handleCron() {
+  async deleteExpiredTokens() {
     try {
       await this.tokenRepository.delete({ endTime: LessThan(new Date()) });
     } catch (error) {

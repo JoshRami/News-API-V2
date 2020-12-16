@@ -85,7 +85,6 @@ export class NewsService {
   async getNews(query: string, only: NewsSources): Promise<News[]> {
     try {
       const news: News[] = [];
-
       const onlyOneSource = Object.values(NewsSources).includes(only);
 
       if (onlyOneSource) {
@@ -111,6 +110,7 @@ export class NewsService {
       throw new InternalServerErrorException('Error while creating user');
     }
   }
+
   private async getByOneSource(query: string, only: string): Promise<News[]> {
     try {
       const news: News[] = [];

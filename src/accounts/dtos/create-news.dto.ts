@@ -1,7 +1,13 @@
 import { Type } from 'class-transformer';
-import { ArrayMinSize, IsUrl, ValidateNested } from 'class-validator';
+import {
+  ArrayMinSize,
+  IsNotEmpty,
+  IsUrl,
+  ValidateNested,
+} from 'class-validator';
 
 export class webUrl {
+  @IsNotEmpty()
   @IsUrl()
   webUrl: string;
 }

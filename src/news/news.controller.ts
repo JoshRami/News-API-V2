@@ -1,10 +1,11 @@
-import { Controller, Get, Query, UseGuards } from '@nestjs/common';
+import { Controller, Get, Query, Req, UseGuards } from '@nestjs/common';
 import { NewsService } from './news.service';
 import { NewsQueryDto } from './dtos/news-query.dto';
-import { JWTGuard } from 'src/auth/guards/jwt.strategy';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { WhitelistGuard } from 'src/auth/guards/jwt-whitelist.guard';
 
 @Controller('news')
-@UseGuards(JWTGuard)
+@UseGuards(JwtAuthGuard)
 export class NewsController {
   constructor(private readonly newsService: NewsService) {}
 

@@ -14,20 +14,21 @@ import {
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create.user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { JWTGuard } from 'src/auth/guards/jwt.strategy';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { WhitelistGuard } from 'src/auth/guards/jwt-whitelist.guard';
 
 @Controller('users')
 export class UsersController {
   constructor(private readonly userService: UsersService) {}
 
   @Post()
-  @UsePipes(new ValidationPipe())
   async createUser(@Body() createUserDto: CreateUserDto) {
-    await this.userService.createUser(createUserDto);
+    const user = await this.userService.createUser(createUserDto);
+    return { data: user };
   }
 
   @Delete(':id')
-  @UseGuards(JWTGuard)
+  @UseGuards(JwtAuthGuard, WhitelistGuard)
   async deleteUser(@Param('id', ParseIntPipe) id: number) {
     const deleted = await this.userService.deleteUser(id);
     if (!deleted) {
@@ -36,8 +37,7 @@ export class UsersController {
   }
 
   @Patch(':id')
-  @UsePipes(new ValidationPipe())
-  @UseGuards(JWTGuard)
+  @UseGuards(JwtAuthGuard, WhitelistGuard)
   async updateUser(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateUserDto: UpdateUserDto,

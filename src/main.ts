@@ -13,6 +13,7 @@ async function bootstrap() {
   if (process.env.NODE_ENV === 'development') {
     app.use(morgan('tiny'));
   }
+
   app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
 
   const port = parseInt(process.env.PORT) || 3000;
