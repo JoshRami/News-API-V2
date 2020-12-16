@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { webUrl } from 'src/accounts/dtos/create-news.dto';
+import { UsersService } from 'src/users/users.service';
 import { Repository } from 'typeorm';
 import { Recommend } from './recommendations.entity';
 

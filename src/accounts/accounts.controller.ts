@@ -12,7 +12,7 @@ import { UsersService } from 'src/users/users.service';
 import { SaveNewsDto } from './dtos/create-news.dto';
 import { SaveRecommends } from './dtos/save-recommends.dto';
 
-@Controller('me/:id')
+@Controller('me')
 export class AccountController {
   constructor(
     private readonly usersService: UsersService,
@@ -30,25 +30,21 @@ export class AccountController {
     @Param('id', ParseIntPipe) id: number,
     @Body() saveNewsDto: SaveNewsDto,
   ) {
-    await this.usersService.saveNews(id, saveNewsDto.urls);
+    const { urls } = saveNewsDto;
+    const insertedNews = await this.usersService.saveNews(id, urls);
+    return insertedNews;
   }
 
-  @Post('recommendations')
+  @Post(':id/recommendations')
   async saveRecommendations(
     @Param('id', ParseIntPipe) id: number,
-    @Body() saveRecomendationsDto: SaveRecommends,
+    @Body() saveNewsDto: SaveNewsDto,
   ) {
-    const { urls, user } = saveRecomendationsDto;
-    const validatedUser = await this.usersService.findByCredentials(
-      user.username,
-      user.password,
-    );
-    if (!validatedUser) {
-      throw new ForbiddenException('Invalid user credentials');
-    }
-    return this.usersService.saveRecommends(id, urls);
+    const { urls } = saveNewsDto;
+    const recommends = await this.usersService.saveRecommends(id, urls);
+    return { data: recommends };
   }
-  @Get('recommendations')
+  @Get(':id/recommendations')
   async getRecommendations(@Param('id', ParseIntPipe) id: number) {
     const data = this.usersService.getUserRecommends(id);
     return { data };

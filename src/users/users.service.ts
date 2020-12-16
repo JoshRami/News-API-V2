@@ -9,6 +9,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { webUrl } from 'src/accounts/dtos/create-news.dto';
 import { New } from 'src/news/news.entity';
 import { NewsService } from 'src/news/news.service';
+import { Recommend } from 'src/recommendations/recommendations.entity';
 import { RecommendsService } from 'src/recommendations/recommendations.service';
 
 import { Repository } from 'typeorm';
@@ -109,7 +110,7 @@ export class UsersService {
     }
   }
 
-  async saveNews(id: number, urls: webUrl[]): Promise<void> {
+  async saveNews(id: number, urls: webUrl[]): Promise<New[]> {
     try {
       const user = await this.userRepository.findOne(id, {
         relations: ['news'],
@@ -117,14 +118,15 @@ export class UsersService {
       const savedNews = await this.newsService.saveNews(urls);
       user.news = [...user.news, ...savedNews];
       await this.userRepository.save(user);
+      return savedNews;
     } catch (error) {
       throw new InternalServerErrorException('Error while saving news');
     }
   }
 
-  async saveRecommends(id: number, urls: webUrl[]): Promise<void> {
+  async saveRecommends(id: number, urls: webUrl[]): Promise<Recommend[]> {
     try {
-      const user = await this.userRepository.findOne(id, {
+      const user = await this.userRepository.findOneOrFail(id, {
         relations: ['recommends'],
       });
       const savedRecommends = await this.recommendService.saveRecommendation(
@@ -132,6 +134,7 @@ export class UsersService {
       );
       user.recommends = [...user.recommends, ...savedRecommends];
       await this.userRepository.save(user);
+      return savedRecommends;
     } catch (error) {
       throw new InternalServerErrorException('Error while saving recommends');
     }
